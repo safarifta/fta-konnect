@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
 <style>
-  /* ── RESET & BASE ── */
+  /* -- RESET & BASE -- */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -47,11 +47,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── VIEWS / ROUTER ── */
+  /* -- VIEWS / ROUTER -- */
   .view { display: none; min-height: 100vh; }
   .view.active { display: flex; flex-direction: column; }
 
-  /* ── AUTH VIEW ── */
+  /* -- AUTH VIEW -- */
   #view-auth {
     align-items: center;
     justify-content: center;
@@ -122,7 +122,7 @@
   .auth-error { background: rgba(232,64,64,0.12); border: 0.5px solid rgba(232,64,64,0.3); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; font-size: 0.83rem; color: #ff7a7a; margin-bottom: 1rem; display: none; }
   .auth-error.show { display: block; }
 
-  /* ── DASHBOARD HEADER ── */
+  /* -- DASHBOARD HEADER -- */
   .app-header {
     background: var(--ink);
     padding: 1rem 1.25rem;
@@ -140,11 +140,11 @@
   .icon-btn:hover { background: #333; color: #fff; }
   .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem; color: #fff; cursor: pointer; }
 
-  /* ── DASHBOARD CONTENT ── */
+  /* -- DASHBOARD CONTENT -- */
   #view-dashboard { background: var(--surface); }
   .dash-scroll { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; padding-bottom: 5rem; }
 
-  /* ── WALLET CARD ── */
+  /* -- WALLET CARD -- */
   .wallet-card {
     background: var(--ink);
     border-radius: var(--radius-lg);
@@ -180,12 +180,12 @@
   .wallet-btn.accent:hover { background: var(--green-dk); }
   .wallet-btn svg { display: block; margin: 0 auto 4px; }
 
-  /* ── SECTION HEADER ── */
+  /* -- SECTION HEADER -- */
   .section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
   .section-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--ink); }
   .section-link { font-size: 0.8rem; color: var(--green-dk); cursor: pointer; font-weight: 500; }
 
-  /* ── SERVICE GRID ── */
+  /* -- SERVICE GRID -- */
   .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
   .service-item {
     background: var(--card);
@@ -202,7 +202,7 @@
   .service-icon { font-size: 1.4rem; }
   .service-label { font-size: 0.72rem; color: var(--ink-muted); font-weight: 500; line-height: 1.2; }
 
-  /* ── QUICK-TOP-UP CHIPS ── */
+  /* -- QUICK-TOP-UP CHIPS -- */
   .quick-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
   .chip {
     padding: 0.45rem 0.9rem;
@@ -212,7 +212,7 @@
   }
   .chip:hover { border-color: var(--green); color: var(--green-dk); background: var(--green-dim); }
 
-  /* ── TRANSACTIONS LIST ── */
+  /* -- TRANSACTIONS LIST -- */
   .tx-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .tx-item {
     background: var(--card);
@@ -241,7 +241,7 @@
   .tx-badge.pending { background: var(--amber-dim); color: var(--amber); }
   .tx-empty { text-align: center; padding: 2rem 1rem; color: var(--ink-ghost); font-size: 0.9rem; }
 
-  /* ── BOTTOM NAV ── */
+  /* -- BOTTOM NAV -- */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--ink); border-top: 0.5px solid #1e1e1e;
@@ -258,7 +258,7 @@
   .nav-item.active:hover { color: var(--green); }
   .nav-icon { font-size: 1.3rem; line-height: 1; }
 
-  /* ── MODAL / SHEET ── */
+  /* -- MODAL / SHEET -- */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.6);
     z-index: 200; display: none; align-items: flex-end;
@@ -281,7 +281,7 @@
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0.7rem auto 1.25rem; }
   .modal-title { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 1.25rem; }
 
-  /* ── TOPUP FORM ── */
+  /* -- TOPUP FORM -- */
   .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
   .network-btn {
     padding: 0.6rem 0.3rem; background: var(--surface);
@@ -330,7 +330,7 @@
   }
   .topup-error.show { display: block; }
 
-  /* ── FUND WALLET ── */
+  /* -- FUND WALLET -- */
   .fund-methods { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
   .fund-method {
     background: var(--surface); border: 0.5px solid var(--border);
@@ -345,7 +345,7 @@
   .fund-method-desc { font-size: 0.76rem; color: var(--ink-muted); }
   .fund-method-arrow { color: var(--ink-ghost); font-size: 1.1rem; }
 
-  /* ── TOAST ── */
+  /* -- TOAST -- */
   .toast-wrap {
     position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
     z-index: 500; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
@@ -366,7 +366,7 @@
   @keyframes toastIn  { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
   @keyframes toastOut { from { opacity:1; transform: translateY(0); } to { opacity:0; transform: translateY(-8px); } }
 
-  /* ── LOADING OVERLAY ── */
+  /* -- LOADING OVERLAY -- */
   .loading-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.45);
     z-index: 400; display: none; align-items: center; justify-content: center;
@@ -381,7 +381,7 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { color: #fff; font-size: 0.9rem; font-weight: 500; }
 
-  /* ── PROFILE VIEW ── */
+  /* -- PROFILE VIEW -- */
   .profile-header { background: var(--ink); padding: 2rem 1.25rem 1.5rem; text-align: center; }
   .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: #fff; margin: 0 auto 0.75rem; }
   .profile-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: #fff; }
@@ -400,7 +400,7 @@
   .profile-item.danger { color: var(--red); }
   .profile-item.danger .profile-item-icon { background: var(--red-dim); }
 
-  /* ── UTIL ── */
+  /* -- UTIL -- */
   .text-muted { color: var(--ink-muted); }
   .mt-1 { margin-top: 0.5rem; }
   .hidden { display: none !important; }
@@ -408,7 +408,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════ AUTH VIEW ═══════════════════ -->
+<!-- =================== AUTH VIEW =================== -->
 <div id="view-auth" class="view active">
   <div class="auth-card">
     <div class="auth-logo">FTA <span>Konnect</span></div>
@@ -453,7 +453,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════ DASHBOARD VIEW ═══════════════════ -->
+<!-- =================== DASHBOARD VIEW =================== -->
 <div id="view-dashboard" class="view">
   <!-- Header -->
   <div class="app-header">
@@ -557,7 +557,7 @@
   </nav>
 </div>
 
-<!-- ═══════════════════ HISTORY VIEW ═══════════════════ -->
+<!-- =================== HISTORY VIEW =================== -->
 <div id="view-history" class="view">
   <div class="app-header">
     <div class="header-logo">FTA <span>Konnect</span></div>
@@ -587,7 +587,7 @@
   </nav>
 </div>
 
-<!-- ═══════════════════ PROFILE VIEW ═══════════════════ -->
+<!-- =================== PROFILE VIEW =================== -->
 <div id="view-profile" class="view">
   <div class="profile-header">
     <div class="profile-avatar" id="profile-avatar-big"></div>
@@ -632,7 +632,7 @@
   </nav>
 </div>
 
-<!-- ═══════════════════ MODALS ═══════════════════ -->
+<!-- =================== MODALS =================== -->
 
 <!-- Airtime Top-up Modal -->
 <div class="modal-overlay" id="modal-topup" onclick="closeModalOnBg(event,'modal-topup')">
@@ -727,7 +727,7 @@
 <!-- Toast Container -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<!-- =================== SCRIPTS =================== -->
 
 <!-- Firebase SDK (Compat v9 — works via CDN, no bundler needed) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -735,23 +735,22 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   ██████████████   CONFIGURATION BLOCK   ████████████████████
+/* ===========================================================
+   --------------   CONFIGURATION BLOCK   --------------------
    Fill in your real values here before deploying.
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB7q1eyv4xf_lpGZ-wW7OXqNzj6lYX3UJc",
-  authDomain: "fta-konnect.firebaseapp.com",
-  databaseURL: "https://fta-konnect-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "fta-konnect",
-  storageBucket: "fta-konnect.firebasestorage.app",
-  messagingSenderId: "58793057535",
-  appId: "1:58793057535:web:d760a13c1d1a5dd49b00ca"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const CONFIG = {
+  // 1. Firebase config — copy from Firebase Console → Project Settings → Web App
+  firebase: {
+    apiKey:            "AIzaSyB7q1eyv4xf_lpGZ-wW7OXqNzj6lYX3UJc",
+    authDomain:        "fta-konnect.firebaseapp.com",
+    databaseURL:       "https://fta-konnect-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:         "fta-konnect",
+    storageBucket:     "fta-konnect.firebasestorage.app",
+    messagingSenderId: "58793057535",
+    appId:             "1:58793057535:web:d760a13c1d1a5dd49b00ca"
+  },
 
   // 2. Google Apps Script deployment URL — paste the /exec URL here
   gasUrl: "https://script.google.com/macros/s/AKfycbwaiB7KOP_-_0IXfBGgSAuEu7CM9zRDWgEQND-qxxlXBd7t2oGrcVdvlmkNISnTMirB/exec",
@@ -767,25 +766,25 @@ const app = initializeApp(firebaseConfig);
   }
 };
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    FIREBASE INIT
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 const firebaseApp = firebase.initializeApp(CONFIG.firebase);
 const auth = firebase.auth();
 const db   = firebase.database();
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    APP STATE
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 let currentUser = null;
 let selectedNetwork = null;
 let selectedAmount  = null;
 let userDataCache   = null;
 let txUnsubscribe   = null;   // Firebase listener cleanup ref
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    AUTH STATE OBSERVER — single source of truth for routing
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user;
@@ -798,9 +797,9 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    VIEW ROUTER
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const el = document.getElementById('view-' + name);
@@ -809,9 +808,9 @@ function showView(name) {
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    AUTH HANDLERS
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function switchAuthTab(tab) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
@@ -887,9 +886,9 @@ function friendlyAuthError(code) {
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    DASHBOARD INIT
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function initDashboard() {
   const uid = currentUser.uid;
   const initials = (currentUser.displayName || currentUser.email || 'U')[0].toUpperCase();
@@ -921,9 +920,9 @@ function initDashboard() {
   });
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    TRANSACTION RENDERING
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function renderTransactions(containerId, txs) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -935,7 +934,7 @@ function renderTransactions(containerId, txs) {
     const isCredit  = tx.type === 'wallet_fund';
     const isPending = tx.status === 'pending';
     const typeClass = isCredit ? 'credit' : isPending ? 'pending' : 'debit';
-    const icon      = isCredit ? '⬆️' : tx.type === 'airtime' ? '📱' : '⚡';
+    const icon      = isCredit ? '+' : tx.type === 'airtime' ? 'SIM' : 'PWR';
     const sign      = isCredit ? '+' : '-';
     const label     = tx.type === 'airtime'      ? `Airtime → ${tx.recipient || ''}` :
                       tx.type === 'wallet_fund'  ? 'Wallet Funded' :
@@ -955,9 +954,9 @@ function renderTransactions(containerId, txs) {
   }).join('');
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    MODAL SYSTEM
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function openModal(name) {
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
   const el = document.getElementById('modal-' + name);
@@ -971,9 +970,9 @@ function closeModalOnBg(event, name) {
   if (event.target.classList.contains('modal-overlay')) closeModal(name);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    TOP-UP FORM LOGIC
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function selectNetwork(net, btn) {
   selectedNetwork = net;
   document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
@@ -1008,18 +1007,18 @@ function setTopupError(msg) {
   el.classList.toggle('show', !!msg);
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    CORE TRANSACTION FUNCTION
    Implements: provisional debit → GAS API call
    → confirm or rollback, with idempotency guard.
-   ───────────────────────────────────────────── */
+   --------------------------------------------- */
 async function processTopUp() {
   setTopupError('');
   const phone  = document.getElementById('topup-phone').value.trim();
   const amount = parseFloat(document.getElementById('topup-amount').value);
   const net    = selectedNetwork;
 
-  // ── Validation
+  // -- Validation
   if (!net)              { setTopupError('Please select a network.'); return; }
   if (!/^0[789]\d{9}$/.test(phone)) { setTopupError('Enter a valid 11-digit Nigerian phone number.'); return; }
   if (!amount || amount < 50)        { setTopupError('Minimum top-up amount is ₦50.'); return; }
@@ -1029,7 +1028,7 @@ async function processTopUp() {
   const userRef    = db.ref('users/' + uid);
   const txBaseRef  = db.ref('transactions/' + uid);
 
-  // ── 1. Read live balance (prevents stale-cache issues)
+  // -- 1. Read live balance (prevents stale-cache issues)
   const snap    = await userRef.once('value');
   const userData = snap.val() || {};
   const balance  = userData.balance || 0;
@@ -1039,10 +1038,10 @@ async function processTopUp() {
     return;
   }
 
-  // ── 2. Generate idempotency key — prevents double-processing on retry
+  // -- 2. Generate idempotency key — prevents double-processing on retry
   const txKey = txBaseRef.push().key;
 
-  // ── 3. Provisional debit + create PENDING transaction record atomically
+  // -- 3. Provisional debit + create PENDING transaction record atomically
   const newBalance = +(balance - amount).toFixed(2);
   await userRef.update({ balance: newBalance });
   await db.ref(`transactions/${uid}/${txKey}`).set({
@@ -1055,13 +1054,13 @@ async function processTopUp() {
     idempotencyKey: txKey
   });
 
-  // ── 4. Disable UI during processing
+  // -- 4. Disable UI during processing
   const btn = document.getElementById('btn-topup');
   btn.disabled = true; btn.textContent = 'Processing…';
   showLoader('Sending airtime…');
 
   try {
-    // ── 5. Call Google Apps Script gateway
+    // -- 5. Call Google Apps Script gateway
     //    Using no-cors mode since GAS doesn't return CORS headers on all responses.
     //    We fire the request and use the Firebase TX record as the source of truth.
     const payload = { phone, amount, network: net, userId: uid, txKey };
@@ -1092,11 +1091,11 @@ async function processTopUp() {
       vendorMsg  = fetchErr.toString();
     }
 
-    // ── 6. Confirm or rollback
+    // -- 6. Confirm or rollback
     if (apiSuccess) {
       await db.ref(`transactions/${uid}/${txKey}`).update({ status: 'success' });
       closeModal('topup');
-      showToast('Airtime sent successfully! ✓', 'success');
+      showToast('Airtime sent successfully!', 'success');
       resetTopupForm();
     } else {
       // Rollback balance
@@ -1129,9 +1128,9 @@ function resetTopupForm() {
   setTopupError('');
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    QUICK TOP-UP (pre-fills modal from chip tap)
-   ───────────────────────────────────────────── */
+   --------------------------------------------- */
 function quickTopup(amount) {
   openModal('topup');
   setTimeout(() => {
@@ -1144,9 +1143,9 @@ function quickTopup(amount) {
   }, 50);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    FUND WALLET
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function copyAccountNumber() {
   const box    = document.getElementById('virtual-acct-box');
   const numEl  = document.getElementById('va-number');
@@ -1171,9 +1170,9 @@ function openNotifications() {
   showToast('No new notifications', 'info');
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    TOAST SYSTEM
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function showToast(message, type = 'info') {
   const wrap  = document.getElementById('toast-wrap');
   const toast = document.createElement('div');
@@ -1186,9 +1185,9 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    LOADING OVERLAY
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 function showLoader(msg = 'Processing…') {
   document.getElementById('loading-text').textContent = msg;
   document.getElementById('loading-overlay').classList.add('show');
@@ -1197,9 +1196,9 @@ function hideLoader() {
   document.getElementById('loading-overlay').classList.remove('show');
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ===========================================================
    PHONE INPUT LIVE UPDATE for summary
-   ═══════════════════════════════════════════════════════════ */
+   =========================================================== */
 document.getElementById('topup-phone').addEventListener('input', updateSummary);
 </script>
 </body>
