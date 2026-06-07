@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FTA Konnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:       #0d0d0d;
+    --ink-muted: #5c5c5c;
+    --ink-ghost: #a0a0a0;
+    --surface:   #f7f6f2;
+    --card:      #ffffff;
+    --border:    #e3e1d9;
+    --green:     #00c27a;
+    --green-dim: #e6faf3;
+    --green-dk:  #008f59;
+    --red:       #e84040;
+    --red-dim:   #fdf0f0;
+    --amber:     #f5a623;
+    --amber-dim: #fff8ec;
+    --blue:      #2563eb;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-xl: 32px;
+    --shadow-card: 0 2px 12px rgba(0,0,0,.07), 0 0 0 0.5px rgba(0,0,0,.06);
+    --shadow-float: 0 8px 32px rgba(0,0,0,.12), 0 0 0 0.5px rgba(0,0,0,.08);
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --transition: 200ms cubic-bezier(.4,0,.2,1);
+  }
+
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font-body);
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── VIEWS / ROUTER ── */
+  .view { display: none; min-height: 100vh; }
+  .view.active { display: flex; flex-direction: column; }
+
+  /* ── AUTH VIEW ── */
+  #view-auth {
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  #view-auth::before {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(ellipse 60% 50% at 70% 30%, #00c27a22 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 20% 80%, #2563eb18 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .auth-card {
+    background: #181818;
+    border: 0.5px solid #2e2e2e;
+    border-radius: var(--radius-xl);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+  }
+  .auth-logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.5px;
+  }
+  .auth-logo span { color: var(--green); }
+  .auth-tagline { font-size: 0.82rem; color: #888; margin-bottom: 2rem; }
+  .auth-tabs { display: flex; gap: 4px; background: #222; border-radius: var(--radius-sm); padding: 4px; margin-bottom: 1.5rem; }
+  .auth-tab {
+    flex: 1; padding: 0.5rem; border: none; background: transparent;
+    color: #888; font-family: var(--font-body); font-size: 0.85rem;
+    border-radius: 6px; cursor: pointer; transition: var(--transition);
+  }
+  .auth-tab.active { background: var(--green); color: #fff; font-weight: 500; }
+
+  .form-group { margin-bottom: 1rem; }
+  .form-label { font-size: 0.78rem; color: #888; margin-bottom: 0.35rem; display: block; letter-spacing: 0.03em; text-transform: uppercase; }
+  .form-input {
+    width: 100%; padding: 0.75rem 1rem;
+    background: #222; border: 0.5px solid #333;
+    border-radius: var(--radius-sm); color: #fff;
+    font-family: var(--font-body); font-size: 0.95rem;
+    transition: var(--transition); outline: none;
+  }
+  .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,194,122,0.15); }
+  .form-input::placeholder { color: #555; }
+
+  .btn-primary {
+    width: 100%; padding: 0.85rem;
+    background: var(--green); border: none;
+    border-radius: var(--radius-sm); color: #fff;
+    font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: var(--transition); letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { background: var(--green-dk); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .auth-error { background: rgba(232,64,64,0.12); border: 0.5px solid rgba(232,64,64,0.3); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; font-size: 0.83rem; color: #ff7a7a; margin-bottom: 1rem; display: none; }
+  .auth-error.show { display: block; }
+
+  /* ── DASHBOARD HEADER ── */
+  .app-header {
+    background: var(--ink);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: #fff; letter-spacing: -0.3px; }
+  .header-logo span { color: var(--green); }
+  .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .icon-btn { background: #2a2a2a; border: 0.5px solid #333; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); color: #aaa; font-size: 1rem; }
+  .icon-btn:hover { background: #333; color: #fff; }
+  .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem; color: #fff; cursor: pointer; }
+
+  /* ── DASHBOARD CONTENT ── */
+  #view-dashboard { background: var(--surface); }
+  .dash-scroll { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; padding-bottom: 5rem; }
+
+  /* ── WALLET CARD ── */
+  .wallet-card {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .wallet-card::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -20%;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,194,122,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .wallet-label { font-size: 0.75rem; color: #777; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .wallet-balance { font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1; margin-bottom: 0.25rem; }
+  .wallet-balance sup { font-size: 1rem; font-weight: 400; color: #777; letter-spacing: 0; vertical-align: super; }
+  .wallet-user { font-size: 0.8rem; color: #555; margin-bottom: 1.25rem; }
+  .wallet-actions { display: flex; gap: 0.6rem; }
+  .wallet-btn {
+    flex: 1; padding: 0.65rem 0.5rem;
+    background: #1e1e1e; border: 0.5px solid #2e2e2e;
+    border-radius: var(--radius-sm); color: #ccc;
+    font-family: var(--font-body); font-size: 0.82rem; font-weight: 500;
+    cursor: pointer; transition: var(--transition); text-align: center;
+  }
+  .wallet-btn:hover { border-color: var(--green); color: var(--green); }
+  .wallet-btn.accent { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+  .wallet-btn.accent:hover { background: var(--green-dk); }
+  .wallet-btn svg { display: block; margin: 0 auto 4px; }
+
+  /* ── SECTION HEADER ── */
+  .section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+  .section-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--ink); }
+  .section-link { font-size: 0.8rem; color: var(--green-dk); cursor: pointer; font-weight: 500; }
+
+  /* ── SERVICE GRID ── */
+  .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+  .service-item {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  }
+  .service-item:hover { border-color: var(--green); background: var(--green-dim); }
+  .service-item:hover .service-icon { color: var(--green-dk); }
+  .service-icon { font-size: 1.4rem; }
+  .service-label { font-size: 0.72rem; color: var(--ink-muted); font-weight: 500; line-height: 1.2; }
+
+  /* ── QUICK-TOP-UP CHIPS ── */
+  .quick-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .chip {
+    padding: 0.45rem 0.9rem;
+    background: var(--card); border: 0.5px solid var(--border);
+    border-radius: 99px; font-size: 0.82rem; cursor: pointer;
+    font-weight: 500; transition: var(--transition);
+  }
+  .chip:hover { border-color: var(--green); color: var(--green-dk); background: var(--green-dim); }
+
+  /* ── TRANSACTIONS LIST ── */
+  .tx-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .tx-item {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    display: flex; align-items: center; gap: 0.85rem;
+  }
+  .tx-icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .tx-icon.credit { background: var(--green-dim); color: var(--green-dk); }
+  .tx-icon.debit  { background: var(--red-dim);   color: var(--red); }
+  .tx-icon.pending { background: var(--amber-dim); color: var(--amber); }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-name { font-size: 0.88rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-date { font-size: 0.74rem; color: var(--ink-ghost); margin-top: 2px; }
+  .tx-amount { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+  .tx-amount.credit { color: var(--green-dk); }
+  .tx-amount.debit  { color: var(--red); }
+  .tx-badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 99px; display: inline-block; margin-top: 2px; }
+  .tx-badge.success { background: var(--green-dim); color: var(--green-dk); }
+  .tx-badge.failed  { background: var(--red-dim); color: var(--red); }
+  .tx-badge.pending { background: var(--amber-dim); color: var(--amber); }
+  .tx-empty { text-align: center; padding: 2rem 1rem; color: var(--ink-ghost); font-size: 0.9rem; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--ink); border-top: 0.5px solid #1e1e1e;
+    display: flex; padding: 0.6rem 0 0.9rem;
+    z-index: 100;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; cursor: pointer; color: #555; transition: var(--transition);
+    font-size: 0.65rem; padding: 0.3rem 0;
+  }
+  .nav-item.active { color: var(--green); }
+  .nav-item:hover { color: #aaa; }
+  .nav-item.active:hover { color: var(--green); }
+  .nav-icon { font-size: 1.3rem; line-height: 1; }
+
+  /* ── MODAL / SHEET ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 200; display: none; align-items: flex-end;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--card);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 0.5rem 1.25rem 2rem;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    animation: slideUp 240ms cubic-bezier(.32,0,.67,0) forwards;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0.7rem auto 1.25rem; }
+  .modal-title { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 1.25rem; }
+
+  /* ── TOPUP FORM ── */
+  .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+  .network-btn {
+    padding: 0.6rem 0.3rem; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; transition: var(--transition); text-align: center;
+    color: var(--ink-muted);
+  }
+  .network-btn.selected { border-color: var(--green); background: var(--green-dim); color: var(--green-dk); }
+  .network-btn:hover:not(.selected) { border-color: #bbb; }
+
+  .amount-presets { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .amount-preset {
+    padding: 0.4rem 0.85rem;
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 99px; font-size: 0.82rem; cursor: pointer; font-weight: 500;
+    transition: var(--transition);
+  }
+  .amount-preset.selected { background: var(--green); color: #fff; border-color: var(--green); }
+  .amount-preset:hover:not(.selected) { border-color: #bbb; }
+
+  .app-input {
+    width: 100%; padding: 0.8rem 1rem;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--ink);
+    font-family: var(--font-body); font-size: 0.95rem;
+    transition: var(--transition); outline: none;
+    margin-bottom: 0.85rem;
+  }
+  .app-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,194,122,0.12); }
+  .input-label { font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.3rem; display: block; font-weight: 500; }
+
+  .topup-summary {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem;
+  }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+  .summary-row + .summary-row { margin-top: 0.4rem; }
+  .summary-row span:first-child { color: var(--ink-muted); }
+  .summary-row.total span { font-weight: 600; font-family: var(--font-display); }
+
+  .topup-error {
+    background: var(--red-dim); border: 0.5px solid rgba(232,64,64,0.3);
+    border-radius: var(--radius-sm); padding: 0.65rem 0.85rem;
+    font-size: 0.83rem; color: var(--red); margin-bottom: 0.85rem; display: none;
+  }
+  .topup-error.show { display: block; }
+
+  /* ── FUND WALLET ── */
+  .fund-methods { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .fund-method {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 1rem 1.1rem;
+    cursor: pointer; transition: var(--transition);
+    display: flex; align-items: center; gap: 0.85rem;
+  }
+  .fund-method:hover { border-color: var(--green); background: var(--green-dim); }
+  .fund-method-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--card); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .fund-method-info { flex: 1; }
+  .fund-method-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+  .fund-method-desc { font-size: 0.76rem; color: var(--ink-muted); }
+  .fund-method-arrow { color: var(--ink-ghost); font-size: 1.1rem; }
+
+  /* ── TOAST ── */
+  .toast-wrap {
+    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+    z-index: 500; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--ink); color: #fff;
+    padding: 0.65rem 1.25rem; border-radius: 99px;
+    font-size: 0.85rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+    box-shadow: var(--shadow-float);
+    animation: toastIn 220ms ease forwards;
+    pointer-events: auto;
+  }
+  .toast.success { background: var(--green-dk); }
+  .toast.error   { background: var(--red); }
+  .toast.out     { animation: toastOut 200ms ease forwards; }
+  @keyframes toastIn  { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes toastOut { from { opacity:1; transform: translateY(0); } to { opacity:0; transform: translateY(-8px); } }
+
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 400; display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1rem; backdrop-filter: blur(3px);
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--green); border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: #fff; font-size: 0.9rem; font-weight: 500; }
+
+  /* ── PROFILE VIEW ── */
+  .profile-header { background: var(--ink); padding: 2rem 1.25rem 1.5rem; text-align: center; }
+  .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: #fff; margin: 0 auto 0.75rem; }
+  .profile-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: #fff; }
+  .profile-email { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
+  .profile-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .profile-item {
+    background: var(--card); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 1rem 1.1rem;
+    display: flex; align-items: center; gap: 0.85rem; cursor: pointer;
+    transition: var(--transition);
+  }
+  .profile-item:hover { border-color: #bbb; }
+  .profile-item-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .profile-item-text { flex: 1; font-size: 0.9rem; font-weight: 500; }
+  .profile-item-arrow { color: var(--ink-ghost); }
+  .profile-item.danger { color: var(--red); }
+  .profile-item.danger .profile-item-icon { background: var(--red-dim); }
+
+  /* ── UTIL ── */
+  .text-muted { color: var(--ink-muted); }
+  .mt-1 { margin-top: 0.5rem; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ AUTH VIEW ═══════════════════ -->
+<div id="view-auth" class="view active">
+  <div class="auth-card">
+    <div class="auth-logo">FTA <span>Konnect</span></div>
+    <p class="auth-tagline">Nigeria's Fastest VTU Wallet — Powered by You</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <div id="auth-error" class="auth-error"></div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="login-email" class="form-input" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-input" placeholder="••••••••"/>
+      </div>
+      <button class="btn-primary" onclick="handleLogin()" id="btn-login">Sign In</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="reg-name" class="form-input" placeholder="Adebayo Okonkwo"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="reg-email" class="form-input" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters"/>
+      </div>
+      <button class="btn-primary" onclick="handleRegister()" id="btn-register">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DASHBOARD VIEW ═══════════════════ -->
+<div id="view-dashboard" class="view">
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-logo">FTA <span>Konnect</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openNotifications()" title="Notifications">🔔</button>
+      <div class="user-avatar" id="header-avatar" onclick="showView('profile')"></div>
+    </div>
+  </div>
+
+  <div class="dash-scroll">
+    <!-- Wallet Card -->
+    <div class="wallet-card">
+      <p class="wallet-label">Available Balance</p>
+      <div class="wallet-balance"><sup>₦</sup><span id="balance-display">0.00</span></div>
+      <p class="wallet-user" id="wallet-user-name">Loading…</p>
+      <div class="wallet-actions">
+        <button class="wallet-btn accent" onclick="openModal('fund-wallet')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+          Fund Wallet
+        </button>
+        <button class="wallet-btn" onclick="openModal('topup')">
+          📱 Airtime
+        </button>
+        <button class="wallet-btn" onclick="showToast('Data bundles coming soon!', 'info')">
+          📶 Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div>
+      <div class="section-hd">
+        <span class="section-title">Services</span>
+      </div>
+      <div class="services-grid">
+        <div class="service-item" onclick="openModal('topup')">
+          <div class="service-icon">📱</div>
+          <div class="service-label">Airtime</div>
+        </div>
+        <div class="service-item" onclick="showToast('Data bundles coming soon!', 'info')">
+          <div class="service-icon">📶</div>
+          <div class="service-label">Data Bundle</div>
+        </div>
+        <div class="service-item" onclick="showToast('Electricity bills coming soon!', 'info')">
+          <div class="service-icon">⚡</div>
+          <div class="service-label">Electricity</div>
+        </div>
+        <div class="service-item" onclick="showToast('Cable TV coming soon!', 'info')">
+          <div class="service-icon">📺</div>
+          <div class="service-label">Cable TV</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Top-up -->
+    <div>
+      <div class="section-hd">
+        <span class="section-title">Quick Top-up</span>
+      </div>
+      <div class="quick-chips">
+        <div class="chip" onclick="quickTopup(100)">₦100</div>
+        <div class="chip" onclick="quickTopup(200)">₦200</div>
+        <div class="chip" onclick="quickTopup(500)">₦500</div>
+        <div class="chip" onclick="quickTopup(1000)">₦1,000</div>
+        <div class="chip" onclick="quickTopup(2000)">₦2,000</div>
+        <div class="chip" onclick="quickTopup(5000)">₦5,000</div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div>
+      <div class="section-hd">
+        <span class="section-title">Recent Transactions</span>
+        <span class="section-link" onclick="showView('history')">See all</span>
+      </div>
+      <div class="tx-list" id="recent-tx-list">
+        <div class="tx-empty">No transactions yet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="showView('dashboard')" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="showView('history')" id="nav-history">
+      <span class="nav-icon">🧾</span>
+      <span>History</span>
+    </div>
+    <div class="nav-item" onclick="openModal('topup')" id="nav-topup">
+      <span class="nav-icon">⚡</span>
+      <span>Top-up</span>
+    </div>
+    <div class="nav-item" onclick="showView('profile')" id="nav-profile">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════ HISTORY VIEW ═══════════════════ -->
+<div id="view-history" class="view">
+  <div class="app-header">
+    <div class="header-logo">FTA <span>Konnect</span></div>
+    <div class="header-actions">
+      <div class="user-avatar" id="hist-avatar" onclick="showView('profile')"></div>
+    </div>
+  </div>
+  <div class="dash-scroll">
+    <div style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:0.5rem">Transaction History</div>
+    <div class="tx-list" id="full-tx-list">
+      <div class="tx-empty">No transactions yet</div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="showView('dashboard')" id="nav2-home">
+      <span class="nav-icon">🏠</span><span>Home</span>
+    </div>
+    <div class="nav-item active" onclick="showView('history')" id="nav2-history">
+      <span class="nav-icon">🧾</span><span>History</span>
+    </div>
+    <div class="nav-item" onclick="openModal('topup')" id="nav2-topup">
+      <span class="nav-icon">⚡</span><span>Top-up</span>
+    </div>
+    <div class="nav-item" onclick="showView('profile')" id="nav2-profile">
+      <span class="nav-icon">👤</span><span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════ PROFILE VIEW ═══════════════════ -->
+<div id="view-profile" class="view">
+  <div class="profile-header">
+    <div class="profile-avatar" id="profile-avatar-big"></div>
+    <div class="profile-name" id="profile-name-big">—</div>
+    <div class="profile-email" id="profile-email-big">—</div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-item" onclick="showToast('Security settings coming soon', 'info')">
+      <div class="profile-item-icon">🔐</div>
+      <div class="profile-item-text">Security & PIN</div>
+      <span class="profile-item-arrow">›</span>
+    </div>
+    <div class="profile-item" onclick="showToast('Notifications settings coming soon', 'info')">
+      <div class="profile-item-icon">🔔</div>
+      <div class="profile-item-text">Notifications</div>
+      <span class="profile-item-arrow">›</span>
+    </div>
+    <div class="profile-item" onclick="showToast('Support coming soon', 'info')">
+      <div class="profile-item-icon">💬</div>
+      <div class="profile-item-text">Help & Support</div>
+      <span class="profile-item-arrow">›</span>
+    </div>
+    <div class="profile-item danger" onclick="handleSignOut()">
+      <div class="profile-item-icon">🚪</div>
+      <div class="profile-item-text">Sign Out</div>
+      <span class="profile-item-arrow">›</span>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="showView('dashboard')">
+      <span class="nav-icon">🏠</span><span>Home</span>
+    </div>
+    <div class="nav-item" onclick="showView('history')">
+      <span class="nav-icon">🧾</span><span>History</span>
+    </div>
+    <div class="nav-item" onclick="openModal('topup')">
+      <span class="nav-icon">⚡</span><span>Top-up</span>
+    </div>
+    <div class="nav-item active">
+      <span class="nav-icon">👤</span><span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- Airtime Top-up Modal -->
+<div class="modal-overlay" id="modal-topup" onclick="closeModalOnBg(event,'modal-topup')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📱 Airtime Top-up</div>
+
+    <label class="input-label">Select Network</label>
+    <div class="network-grid">
+      <button class="network-btn" onclick="selectNetwork('mtn',this)" style="color:#ffc300">MTN</button>
+      <button class="network-btn" onclick="selectNetwork('airtel',this)" style="color:#e2231a">Airtel</button>
+      <button class="network-btn" onclick="selectNetwork('glo',this)" style="color:#008000">Glo</button>
+      <button class="network-btn" onclick="selectNetwork('9mobile',this)">9Mobile</button>
+    </div>
+
+    <label class="input-label">Phone Number</label>
+    <input type="tel" id="topup-phone" class="app-input" placeholder="08012345678" maxlength="11"/>
+
+    <label class="input-label">Amount (₦)</label>
+    <div class="amount-presets">
+      <div class="amount-preset" onclick="selectAmount(100,this)">₦100</div>
+      <div class="amount-preset" onclick="selectAmount(200,this)">₦200</div>
+      <div class="amount-preset" onclick="selectAmount(500,this)">₦500</div>
+      <div class="amount-preset" onclick="selectAmount(1000,this)">₦1,000</div>
+      <div class="amount-preset" onclick="selectAmount(2000,this)">₦2,000</div>
+    </div>
+    <input type="number" id="topup-amount" class="app-input" placeholder="Or enter custom amount" min="50" max="50000"
+           oninput="clearAmountPresets();updateSummary()"/>
+
+    <div class="topup-summary">
+      <div class="summary-row"><span>Network</span><span id="sum-network">—</span></div>
+      <div class="summary-row"><span>Recipient</span><span id="sum-phone">—</span></div>
+      <div class="summary-row total"><span>Total Debit</span><span id="sum-amount">₦0.00</span></div>
+    </div>
+
+    <div class="topup-error" id="topup-error"></div>
+
+    <button class="btn-primary" onclick="processTopUp()" id="btn-topup" style="font-family:var(--font-display)">
+      Confirm &amp; Send Airtime
+    </button>
+  </div>
+</div>
+
+<!-- Fund Wallet Modal -->
+<div class="modal-overlay" id="modal-fund-wallet" onclick="closeModalOnBg(event,'modal-fund-wallet')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💳 Fund Wallet</div>
+    <p style="font-size:0.85rem;color:var(--ink-muted);margin-bottom:1.25rem;line-height:1.6">
+      Fund your FTA Konnect wallet using any of these methods. Your balance updates automatically.
+    </p>
+
+    <div class="fund-methods">
+      <div class="fund-method" onclick="copyAccountNumber()">
+        <div class="fund-method-icon">🏦</div>
+        <div class="fund-method-info">
+          <div class="fund-method-name">Bank Transfer (Recommended)</div>
+          <div class="fund-method-desc">Transfer to your dedicated virtual account — instant</div>
+        </div>
+        <span class="fund-method-arrow">›</span>
+      </div>
+      <div class="fund-method" onclick="showToast('USSD funding coming soon', 'info')">
+        <div class="fund-method-icon">📲</div>
+        <div class="fund-method-info">
+          <div class="fund-method-name">USSD Code</div>
+          <div class="fund-method-desc">Dial *737# or *901# — no internet needed</div>
+        </div>
+        <span class="fund-method-arrow">›</span>
+      </div>
+    </div>
+
+    <!-- Virtual Account Display -->
+    <div id="virtual-acct-box" style="background:var(--green-dim);border:0.5px solid rgba(0,194,122,0.3);border-radius:var(--radius-md);padding:1rem 1.1rem;display:none">
+      <p style="font-size:0.75rem;color:var(--green-dk);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem">Your Virtual Account</p>
+      <p style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--green-dk);letter-spacing:1px" id="va-number">—</p>
+      <p style="font-size:0.82rem;color:var(--ink-muted);margin-top:0.25rem" id="va-bank">—</p>
+      <p style="font-size:0.75rem;color:var(--ink-ghost);margin-top:0.5rem">Tap the account number above to copy</p>
+    </div>
+
+    <p style="font-size:0.75rem;color:var(--ink-ghost);margin-top:1rem;text-align:center;line-height:1.6">
+      ⚠️ Only fund from accounts in your name. Min. ₦50.
+    </p>
+  </div>
+</div>
+
+<!-- Global Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <p class="loading-text" id="loading-text">Processing…</p>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+
+<!-- Firebase SDK (Compat v9 — works via CDN, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ██████████████   CONFIGURATION BLOCK   ████████████████████
+   Fill in your real values here before deploying.
+   ═══════════════════════════════════════════════════════════ */
+
+const CONFIG = {
+  // 1. Firebase config — copy from Firebase Console → Project Settings → Web App
+  firebase: {
+    apiKey:            "YOUR_FIREBASE_API_KEY",
+    authDomain:        "your-project-id.firebaseapp.com",
+    databaseURL:       "https://your-project-id-default-rtdb.firebaseio.com",
+    projectId:         "your-project-id",
+    storageBucket:     "your-project-id.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId:             "YOUR_APP_ID"
+  },
+
+  // 2. Google Apps Script deployment URL — paste the /exec URL here
+  gasUrl: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec",
+
+  // 3. App identity / branding
+  appName: "FTA Konnect",
+
+  // 4. Optional: virtual account details if your VTU provider assigns one
+  virtualAccount: {
+    number: "0000000000",    // Replace with real account from your provider
+    bank:   "Providus Bank", // Replace with real bank name
+    name:   "FTA KONNECT"
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   FIREBASE INIT
+   ═══════════════════════════════════════════════════════════ */
+const firebaseApp = firebase.initializeApp(CONFIG.firebase);
+const auth = firebase.auth();
+const db   = firebase.database();
+
+/* ═══════════════════════════════════════════════════════════
+   APP STATE
+   ═══════════════════════════════════════════════════════════ */
+let currentUser = null;
+let selectedNetwork = null;
+let selectedAmount  = null;
+let userDataCache   = null;
+let txUnsubscribe   = null;   // Firebase listener cleanup ref
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH STATE OBSERVER — single source of truth for routing
+   ═══════════════════════════════════════════════════════════ */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    initDashboard();
+    showView('dashboard');
+  } else {
+    currentUser = null;
+    if (txUnsubscribe) { txUnsubscribe(); txUnsubscribe = null; }
+    showView('auth');
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   VIEW ROUTER
+   ═══════════════════════════════════════════════════════════ */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (el) el.classList.add('active');
+  // Close any open modals
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH HANDLERS
+   ═══════════════════════════════════════════════════════════ */
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+  clearAuthError();
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearAuthError() {
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  clearAuthError();
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (err) {
+    showAuthError(friendlyAuthError(err.code));
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function handleRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-password').value;
+  if (!name || !email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  if (pass.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true; btn.textContent = 'Creating…';
+  clearAuthError();
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    // Initialize user record in DB with zero balance
+    await db.ref('users/' + cred.user.uid).set({
+      name:       name,
+      email:      email,
+      balance:    0,
+      createdAt:  Date.now(),
+      virtualAccount: CONFIG.virtualAccount
+    });
+  } catch (err) {
+    showAuthError(friendlyAuthError(err.code));
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function handleSignOut() {
+  if (!confirm('Sign out of FTA Konnect?')) return;
+  await auth.signOut();
+}
+
+function friendlyAuthError(code) {
+  const map = {
+    'auth/user-not-found':       'No account found with that email.',
+    'auth/wrong-password':       'Incorrect password. Try again.',
+    'auth/email-already-in-use': 'That email is already registered.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/weak-password':        'Password is too weak.',
+    'auth/too-many-requests':    'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+  };
+  return map[code] || 'Something went wrong. Please try again.';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD INIT
+   ═══════════════════════════════════════════════════════════ */
+function initDashboard() {
+  const uid = currentUser.uid;
+  const initials = (currentUser.displayName || currentUser.email || 'U')[0].toUpperCase();
+
+  // Set avatar initials across all views
+  document.querySelectorAll('#header-avatar,#hist-avatar').forEach(el => el.textContent = initials);
+  document.getElementById('profile-avatar-big').textContent = initials;
+  document.getElementById('profile-email-big').textContent  = currentUser.email || '';
+
+  // Live balance listener — updates on every change
+  const userRef = db.ref('users/' + uid);
+  userRef.on('value', snap => {
+    const data = snap.val() || {};
+    userDataCache = data;
+    const bal = (data.balance || 0).toFixed(2);
+    document.getElementById('balance-display').textContent       = Number(bal).toLocaleString('en-NG', {minimumFractionDigits:2});
+    document.getElementById('wallet-user-name').textContent      = data.name ? `Welcome, ${data.name.split(' ')[0]}` : '';
+    document.getElementById('profile-name-big').textContent      = data.name || currentUser.email || '';
+    document.getElementById('profile-avatar-big').textContent    = (data.name || currentUser.email || 'U')[0].toUpperCase();
+  });
+
+  // Live transaction listener — last 10 for recent, all for history
+  const txRef = db.ref('transactions/' + uid).orderByChild('timestamp').limitToLast(50);
+  txRef.on('value', snap => {
+    const txs = [];
+    snap.forEach(child => txs.unshift({ id: child.key, ...child.val() }));
+    renderTransactions('recent-tx-list', txs.slice(0, 5));
+    renderTransactions('full-tx-list', txs);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TRANSACTION RENDERING
+   ═══════════════════════════════════════════════════════════ */
+function renderTransactions(containerId, txs) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!txs || txs.length === 0) {
+    el.innerHTML = '<div class="tx-empty">No transactions yet</div>';
+    return;
+  }
+  el.innerHTML = txs.map(tx => {
+    const isCredit  = tx.type === 'wallet_fund';
+    const isPending = tx.status === 'pending';
+    const typeClass = isCredit ? 'credit' : isPending ? 'pending' : 'debit';
+    const icon      = isCredit ? '⬆️' : tx.type === 'airtime' ? '📱' : '⚡';
+    const sign      = isCredit ? '+' : '-';
+    const label     = tx.type === 'airtime'      ? `Airtime → ${tx.recipient || ''}` :
+                      tx.type === 'wallet_fund'  ? 'Wallet Funded' :
+                      tx.type === 'data'         ? `Data → ${tx.recipient || ''}` : tx.type;
+    const date = tx.timestamp ? new Date(tx.timestamp).toLocaleString('en-NG', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'
+    }) : '—';
+    const badgeClass = tx.status === 'success' ? 'success' : tx.status === 'failed' ? 'failed' : 'pending';
+    return `<div class="tx-item">
+      <div class="tx-icon ${typeClass}">${icon}</div>
+      <div class="tx-info">
+        <div class="tx-name">${label}</div>
+        <div class="tx-date">${date} <span class="tx-badge ${badgeClass}">${tx.status || 'pending'}</span></div>
+      </div>
+      <div class="tx-amount ${typeClass}">${sign}₦${Number(tx.amount||0).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+function openModal(name) {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  const el = document.getElementById('modal-' + name);
+  if (el) el.classList.add('open');
+}
+function closeModal(name) {
+  const el = document.getElementById('modal-' + name);
+  if (el) el.classList.remove('open');
+}
+function closeModalOnBg(event, name) {
+  if (event.target.classList.contains('modal-overlay')) closeModal(name);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP-UP FORM LOGIC
+   ═══════════════════════════════════════════════════════════ */
+function selectNetwork(net, btn) {
+  selectedNetwork = net;
+  document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateSummary();
+}
+
+function selectAmount(amount, el) {
+  selectedAmount = amount;
+  document.querySelectorAll('.amount-preset').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('topup-amount').value = amount;
+  updateSummary();
+}
+
+function clearAmountPresets() {
+  selectedAmount = null;
+  document.querySelectorAll('.amount-preset').forEach(p => p.classList.remove('selected'));
+}
+
+function updateSummary() {
+  const phone  = document.getElementById('topup-phone').value.trim();
+  const amount = parseFloat(document.getElementById('topup-amount').value) || 0;
+  document.getElementById('sum-network').textContent = selectedNetwork ? selectedNetwork.toUpperCase() : '—';
+  document.getElementById('sum-phone').textContent   = phone || '—';
+  document.getElementById('sum-amount').textContent  = amount > 0 ? `₦${amount.toLocaleString('en-NG', {minimumFractionDigits:2})}` : '₦0.00';
+}
+
+function setTopupError(msg) {
+  const el = document.getElementById('topup-error');
+  el.textContent = msg;
+  el.classList.toggle('show', !!msg);
+}
+
+/* ─────────────────────────────────────────────
+   CORE TRANSACTION FUNCTION
+   Implements: provisional debit → GAS API call
+   → confirm or rollback, with idempotency guard.
+   ───────────────────────────────────────────── */
+async function processTopUp() {
+  setTopupError('');
+  const phone  = document.getElementById('topup-phone').value.trim();
+  const amount = parseFloat(document.getElementById('topup-amount').value);
+  const net    = selectedNetwork;
+
+  // ── Validation
+  if (!net)              { setTopupError('Please select a network.'); return; }
+  if (!/^0[789]\d{9}$/.test(phone)) { setTopupError('Enter a valid 11-digit Nigerian phone number.'); return; }
+  if (!amount || amount < 50)        { setTopupError('Minimum top-up amount is ₦50.'); return; }
+  if (amount > 50000)                { setTopupError('Maximum single top-up is ₦50,000.'); return; }
+
+  const uid        = currentUser.uid;
+  const userRef    = db.ref('users/' + uid);
+  const txBaseRef  = db.ref('transactions/' + uid);
+
+  // ── 1. Read live balance (prevents stale-cache issues)
+  const snap    = await userRef.once('value');
+  const userData = snap.val() || {};
+  const balance  = userData.balance || 0;
+
+  if (balance < amount) {
+    setTopupError(`Insufficient balance. Your wallet has ₦${balance.toLocaleString('en-NG', {minimumFractionDigits:2})}.`);
+    return;
+  }
+
+  // ── 2. Generate idempotency key — prevents double-processing on retry
+  const txKey = txBaseRef.push().key;
+
+  // ── 3. Provisional debit + create PENDING transaction record atomically
+  const newBalance = +(balance - amount).toFixed(2);
+  await userRef.update({ balance: newBalance });
+  await db.ref(`transactions/${uid}/${txKey}`).set({
+    type:      'airtime',
+    amount:    amount,
+    recipient: phone,
+    network:   net,
+    status:    'pending',
+    timestamp: Date.now(),
+    idempotencyKey: txKey
+  });
+
+  // ── 4. Disable UI during processing
+  const btn = document.getElementById('btn-topup');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  showLoader('Sending airtime…');
+
+  try {
+    // ── 5. Call Google Apps Script gateway
+    //    Using no-cors mode since GAS doesn't return CORS headers on all responses.
+    //    We fire the request and use the Firebase TX record as the source of truth.
+    const payload = { phone, amount, network: net, userId: uid, txKey };
+
+    let apiSuccess = false;
+    let vendorMsg  = '';
+
+    try {
+      const response = await fetch(CONFIG.gasUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'text/plain' }, // text/plain avoids preflight CORS
+        body:    JSON.stringify(payload)
+      });
+      const text   = await response.text();
+      const result = JSON.parse(text);
+
+      // Adapt to your VTU provider's actual success indicators
+      apiSuccess = result.status === 'success' &&
+                   (result.vendor_response?.status  === 'success' ||
+                    result.vendor_response?.code    === 200        ||
+                    result.vendor_response?.code    === '200'      ||
+                    result.vendor_response?.success === true);
+      vendorMsg = result.vendor_response?.message || result.error || '';
+    } catch (fetchErr) {
+      // Network error or CORS failure — treat as failure, rollback
+      console.warn('GAS fetch error:', fetchErr);
+      apiSuccess = false;
+      vendorMsg  = fetchErr.toString();
+    }
+
+    // ── 6. Confirm or rollback
+    if (apiSuccess) {
+      await db.ref(`transactions/${uid}/${txKey}`).update({ status: 'success' });
+      closeModal('topup');
+      showToast('Airtime sent successfully! ✓', 'success');
+      resetTopupForm();
+    } else {
+      // Rollback balance
+      await userRef.update({ balance: balance });
+      await db.ref(`transactions/${uid}/${txKey}`).update({ status: 'failed', reason: vendorMsg });
+      setTopupError(vendorMsg || 'Transaction failed. Wallet balance has been restored.');
+    }
+
+  } catch (err) {
+    // Unexpected error — always rollback
+    console.error('TopUp error:', err);
+    await userRef.update({ balance: balance });
+    await db.ref(`transactions/${uid}/${txKey}`).update({ status: 'failed', reason: err.toString() });
+    setTopupError('Unexpected error. Your balance has been restored.');
+  } finally {
+    hideLoader();
+    btn.disabled = false;
+    btn.textContent = 'Confirm & Send Airtime';
+  }
+}
+
+function resetTopupForm() {
+  document.getElementById('topup-phone').value  = '';
+  document.getElementById('topup-amount').value = '';
+  selectedNetwork = null;
+  selectedAmount  = null;
+  document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.amount-preset').forEach(p => p.classList.remove('selected'));
+  updateSummary();
+  setTopupError('');
+}
+
+/* ─────────────────────────────────────────────
+   QUICK TOP-UP (pre-fills modal from chip tap)
+   ───────────────────────────────────────────── */
+function quickTopup(amount) {
+  openModal('topup');
+  setTimeout(() => {
+    document.getElementById('topup-amount').value = amount;
+    selectedAmount = amount;
+    document.querySelectorAll('.amount-preset').forEach(p => {
+      p.classList.toggle('selected', parseInt(p.textContent.replace(/[^0-9]/g,'')) === amount);
+    });
+    updateSummary();
+  }, 50);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FUND WALLET
+   ═══════════════════════════════════════════════════════════ */
+function copyAccountNumber() {
+  const box    = document.getElementById('virtual-acct-box');
+  const numEl  = document.getElementById('va-number');
+  const bankEl = document.getElementById('va-bank');
+
+  // Use user's virtual account if set, else fall back to config
+  const data = userDataCache?.virtualAccount || CONFIG.virtualAccount;
+  numEl.textContent  = data.number || '—';
+  bankEl.textContent = `${data.bank || ''} · ${data.name || ''}`;
+  box.style.display  = '';
+
+  numEl.onclick = () => {
+    navigator.clipboard.writeText(data.number || '').then(() => {
+      showToast('Account number copied!', 'success');
+    }).catch(() => {
+      showToast('Copy failed. Number: ' + data.number, 'info');
+    });
+  };
+}
+
+function openNotifications() {
+  showToast('No new notifications', 'info');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+function showToast(message, type = 'info') {
+  const wrap  = document.getElementById('toast-wrap');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type === 'success' ? 'success' : type === 'error' ? 'error' : ''}`;
+  toast.textContent = message;
+  wrap.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('out');
+    setTimeout(() => toast.remove(), 220);
+  }, 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+function showLoader(msg = 'Processing…') {
+  document.getElementById('loading-text').textContent = msg;
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoader() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PHONE INPUT LIVE UPDATE for summary
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('topup-phone').addEventListener('input', updateSummary);
+</script>
+</body>
+</html>
